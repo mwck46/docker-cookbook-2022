@@ -1,25 +1,48 @@
-## Problem
-The dockerfile form book does not work. Probably some problem associated with the --link option of `docker run`
-
-### Steps that work
+### Deploy docker
 1. Pull images from docker hub  
 ```
 docker pull wordpress:latest
 docker pull mysql:latest
 ```
 
-2. Create volume and network  
+2a. Start containers (option 1, create a docker network and use in both containers)
 ```
 docker volume create db_data
 docker network create mysqlnet
+
+docker run --name mysql1 \
+-e MYSQL_ROOT_PASSWORD=somewordpress \
+-e MYSQL_DATABASE=wordpress \
+-e MYSQL_USER=wordpress \
+-e MYSQL_PASSWORD=wordpress \
+-v db_data:/var/lib/mysql \
+--net=mysqlnet \
+-d mysql
+
+docker run --name test-wordpress \
+-e WORDPRESS_DB_HOST=test-mysql:3306 \
+-e WORDPRESS_DB_USER=wordpress \
+-e WORDPRESS_DB_PASSWORD=wordpress \
+-e WORDPRESS_DB_NAME=wordpress \
+--net=mysqlnet 
+-p 8081:80 
+-d wordpress
 ```
 
-3. Start containers   
+2b. Start containers (option 2, use --link)
 ```
-docker run --name test-mysql -e MYSQL_ROOT_PASSWORD=somewordpress -e MYSQL_DATABASE=wordpress -e MYSQL_USER=wordpress -e MYSQL_PASSWORD=wordpress -v db_data:/var/lib/mysql --net=mysqlnet -d mysql
-docker run --name test-wordpress -e WORDPRESS_DB_HOST=test-mysql:3306 -e WORDPRESS_DB_USER=wordpress -e WORDPRESS_DB_PASSWORD=wordpress -e WORDPRESS_DB_NAME=wordpress --net=mysqlnet -p 8081:80 -d wordpress
-```
+docker run --name mysqlwp -e MYSQL_ROOT_PASSWORD=wordpressdocker \
+-e MYSQL_DATABASE=wordpress \
+-e MYSQL_USER=wordpress \
+-e MYSQL_PASSWORD=wordpresspwd \
+-d mysql
 
+docker run --name wordpress --link mysqlwp:mysql -p 80:80 \
+-e WORDPRESS_DB_NAME=wordpress \
+-e WORDPRESS_DB_USER=wordpress \
+-e WORDPRESS_DB_PASSWORD=wordpresspwd \
+-d wordpress
+```
 
 ### Reference
 https://stackoverflow.com/a/55223785/9265852
