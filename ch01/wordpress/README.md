@@ -1,4 +1,4 @@
-## Deploy docker
+## Deploy wordpress + mysql docker image
 1. Pull images from docker hub  
 ```
 docker pull wordpress:latest
@@ -6,7 +6,7 @@ docker pull mysql:latest
 ```
 
 2. Start containers  
-### [option 1] create a docker network and use in both containers
+### [option 1] Create docker volume and network. Use in both containers
 ```
 docker volume create db_data
 docker network create mysqlnet
