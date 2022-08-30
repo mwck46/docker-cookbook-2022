@@ -1,11 +1,12 @@
-### Deploy docker
+## Deploy docker
 1. Pull images from docker hub  
 ```
 docker pull wordpress:latest
 docker pull mysql:latest
 ```
 
-2a. Start containers (option 1, create a docker network and use in both containers)
+2. Start containers  
+### [option 1] create a docker network and use in both containers
 ```
 docker volume create db_data
 docker network create mysqlnet
@@ -29,7 +30,7 @@ docker run --name test-wordpress \
 -d wordpress
 ```
 
-2b. Start containers (option 2, use --link)
+### [option 2] use --link
 ```
 docker run --name mysqlwp -e MYSQL_ROOT_PASSWORD=wordpressdocker \
 -e MYSQL_DATABASE=wordpress \
